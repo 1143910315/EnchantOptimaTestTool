@@ -114,6 +114,7 @@ int minCostExperienceForLevel = 0;
 std::vector<std::vector<EnchantedBook‌>> minCostExperienceForBookUseList;
 std::tuple<int, int, std::vector<std::vector<int>>> computerEnchantmentCostLevel(std::vector<std::vector<EnchantedBook‌>> &bookUseList) {
     std::vector<EnchantedBook‌> bookList;
+    bookList.reserve(bookUseList.size());
     int totleCostLevel = 0;
     int totleExperience = 0;
     std::vector<std::vector<int>> costLevelVector(bookUseList.size());
