@@ -1,7 +1,9 @@
 #include "item/EnchantedBook‌.h"
 #include "status/StatusVector.hpp"
 #include <cmath>
+#include <format>
 #include <iostream>
+#include <string>
 #include <Windows.h>
 enum class Step {
     computerAnvilUsagePenalty,
@@ -104,10 +106,11 @@ int levelToExperience(int level) {
     }
     return cost;
 }
-std::tuple<int, int> computerEnchantmentCostLevel(std::vector<std::vector<EnchantedBook‌>> &bookUseList) {
+std::tuple<int, int, std::vector<std::vector<int>>> computerEnchantmentCostLevel(std::vector<std::vector<EnchantedBook‌>> &bookUseList) {
     std::vector<EnchantedBook‌> bookList;
     int totleCostLevel = 0;
     int totleExperience = 0;
+    std::vector<std::vector<int>> costLevelVector(bookUseList.size());
     for (size_t i = 0; i < bookUseList.size(); i++) {
         int leftUsage = bookUseList[i][0].usage;
         EnchantedBook‌ book {};
@@ -123,6 +126,7 @@ std::tuple<int, int> computerEnchantmentCostLevel(std::vector<std::vector<Enchan
             costLevel += pow(2, leftUsage) - 1 + pow(2, bookUseList[i][j].usage) - 1;
             totleCostLevel += costLevel;
             totleExperience += levelToExperience(costLevel);
+            costLevelVector[i].push_back(costLevel);
             leftUsage = max(leftUsage, bookUseList[i][j].usage) + 1;
         }
         book.usage = leftUsage;
@@ -137,21 +141,27 @@ std::tuple<int, int> computerEnchantmentCostLevel(std::vector<std::vector<Enchan
         costLevel += pow(2, leftUsage) - 1 + pow(2, bookList[i].usage) - 1;
         totleCostLevel += costLevel;
         totleExperience += levelToExperience(costLevel);
+        costLevelVector[i].push_back(costLevel);
         leftUsage = max(leftUsage, bookList[i].usage) + 1;
     }
-    return std::make_tuple(totleCostLevel, totleExperience);
+    return std::make_tuple(totleCostLevel, totleExperience, costLevelVector);
 }
 bool enchantment(StatusVector<EnchantedBook‌> &bookList, std::vector<std::vector<EnchantedBook‌>> &bookUseList);
 void generatePermutations(StatusVector<EnchantedBook‌> &bookList, int m, std::vector<std::vector<EnchantedBook‌>> &bookUseList) {
     if (m == bookUseList[bookUseList.size() - 1].size()) {
         if (enchantment(bookList, bookUseList)) {
-            auto [totleCostLevel, totleExperience] = computerEnchantmentCostLevel(bookUseList);
-            std::cout << "方案消耗等级：" << totleCostLevel << "方案消耗经验值：" << totleExperience << std::endl;
+            auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(bookUseList);
+            std::cout << "方案消耗等级：" << totleCostLevel << " 方案消耗经验值：" << totleExperience << std::endl;
             for (size_t i = 0; i < bookUseList.size(); i++) {
+                std::string idList;
+                std::string levelList;
                 for (size_t j = 0; j < bookUseList[i].size(); j++) {
-                    std::cout << " " << bookUseList[i][j].id << " ";
+                    idList += std::to_string(bookUseList[i][j].id) + " ";
                 }
-                std::cout << std::endl;
+                for (size_t j = 0; j < costLevel[i].size(); j++) {
+                    levelList += std::to_string(costLevel[i][j]) + " ";
+                }
+                std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
             }
         }
         return;
