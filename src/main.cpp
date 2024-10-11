@@ -106,6 +106,12 @@ int levelToExperience(int level) {
     }
     return cost;
 }
+int minCostLevel = 2147483647;
+int minCostLevelForExperience = 0;
+std::vector<std::vector<EnchantedBook‌>> minCostLevelForBookUseList;
+int minCostExperience = 2147483647;
+int minCostExperienceForLevel = 0;
+std::vector<std::vector<EnchantedBook‌>> minCostExperienceForBookUseList;
 std::tuple<int, int, std::vector<std::vector<int>>> computerEnchantmentCostLevel(std::vector<std::vector<EnchantedBook‌>> &bookUseList) {
     std::vector<EnchantedBook‌> bookList;
     int totleCostLevel = 0;
@@ -152,6 +158,16 @@ void generatePermutations(StatusVector<EnchantedBook‌> &bookList, int m, std::
         if (enchantment(bookList, bookUseList)) {
             auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(bookUseList);
             std::cout << "方案消耗等级：" << totleCostLevel << " 方案消耗经验值：" << totleExperience << std::endl;
+            if (totleCostLevel < minCostLevel || (totleCostLevel == minCostLevel && minCostLevelForExperience > totleExperience)) {
+                minCostLevel = totleCostLevel;
+                minCostLevelForExperience = totleExperience;
+                minCostLevelForBookUseList = bookUseList;
+            }
+            if (totleExperience < minCostExperience || (totleExperience == minCostExperience && minCostExperienceForLevel > totleCostLevel)) {
+                minCostExperienceForLevel = totleCostLevel;
+                minCostExperience = totleExperience;
+                minCostExperienceForBookUseList = bookUseList;
+            }
             for (size_t i = 0; i < bookUseList.size(); i++) {
                 std::string idList;
                 std::string levelList;
@@ -213,8 +229,70 @@ void exhaustiveEnchantOptimizer‌() {
         book.enchants.push_back(enchant);
         bookList.push_back(book);
     }
+    minCostLevel = 2147483647;
+    minCostExperience = 2147483647;
     std::vector<std::vector<EnchantedBook‌>> bookUseList {};
     enchantment(bookList, bookUseList);
+    if (minCostLevel <= minCostExperienceForLevel && minCostLevelForExperience == minCostExperience) {
+        std::cout << "最佳方案消耗等级：" << minCostLevel << " 方案消耗经验值：" << minCostLevelForExperience << std::endl;
+        auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(minCostLevelForBookUseList);
+        for (size_t i = 0; i < minCostLevelForBookUseList.size(); i++) {
+            std::string idList;
+            std::string levelList;
+            for (size_t j = 0; j < minCostLevelForBookUseList[i].size(); j++) {
+                idList += std::to_string(minCostLevelForBookUseList[i][j].id) + " ";
+            }
+            for (size_t j = 0; j < costLevel[i].size(); j++) {
+                levelList += std::to_string(costLevel[i][j]) + " ";
+            }
+            std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
+        }
+    } else if (minCostLevel == minCostExperienceForLevel && minCostLevelForExperience >= minCostExperience) {
+        std::cout << "最佳方案消耗等级：" << minCostExperienceForLevel << " 方案消耗经验值：" << minCostExperience << std::endl;
+        auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(minCostExperienceForBookUseList);
+        for (size_t i = 0; i < minCostExperienceForBookUseList.size(); i++) {
+            std::string idList;
+            std::string levelList;
+            for (size_t j = 0; j < minCostExperienceForBookUseList[i].size(); j++) {
+                idList += std::to_string(minCostExperienceForBookUseList[i][j].id) + " ";
+            }
+            for (size_t j = 0; j < costLevel[i].size(); j++) {
+                levelList += std::to_string(costLevel[i][j]) + " ";
+            }
+            std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
+        }
+    } else {
+        {
+            std::cout << "最少等级方案消耗等级：" << minCostLevel << " 方案消耗经验值：" << minCostLevelForExperience << std::endl;
+            auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(minCostLevelForBookUseList);
+            for (size_t i = 0; i < minCostLevelForBookUseList.size(); i++) {
+                std::string idList;
+                std::string levelList;
+                for (size_t j = 0; j < minCostLevelForBookUseList[i].size(); j++) {
+                    idList += std::to_string(minCostLevelForBookUseList[i][j].id) + " ";
+                }
+                for (size_t j = 0; j < costLevel[i].size(); j++) {
+                    levelList += std::to_string(costLevel[i][j]) + " ";
+                }
+                std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
+            }
+        }
+        {
+            std::cout << "最少经验方案消耗等级：" << minCostExperienceForLevel << " 方案消耗经验值：" << minCostExperience << std::endl;
+            auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(minCostExperienceForBookUseList);
+            for (size_t i = 0; i < minCostExperienceForBookUseList.size(); i++) {
+                std::string idList;
+                std::string levelList;
+                for (size_t j = 0; j < minCostExperienceForBookUseList[i].size(); j++) {
+                    idList += std::to_string(minCostExperienceForBookUseList[i][j].id) + " ";
+                }
+                for (size_t j = 0; j < costLevel[i].size(); j++) {
+                    levelList += std::to_string(costLevel[i][j]) + " ";
+                }
+                std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
+            }
+        }
+    }
 }
 int main(int argc, char **argv) {
     SetConsoleOutputCP(CP_UTF8);
