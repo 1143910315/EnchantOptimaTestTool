@@ -157,7 +157,6 @@ void generatePermutations(StatusVector<EnchantedBook‌> &bookList, int m, std::
     if (m == bookUseList[bookUseList.size() - 1].size()) {
         if (enchantment(bookList, bookUseList)) {
             auto [totleCostLevel, totleExperience, costLevel] = computerEnchantmentCostLevel(bookUseList);
-            std::cout << "方案消耗等级：" << totleCostLevel << " 方案消耗经验值：" << totleExperience << std::endl;
             if (totleCostLevel < minCostLevel || (totleCostLevel == minCostLevel && minCostLevelForExperience > totleExperience)) {
                 minCostLevel = totleCostLevel;
                 minCostLevelForExperience = totleExperience;
@@ -168,17 +167,18 @@ void generatePermutations(StatusVector<EnchantedBook‌> &bookList, int m, std::
                 minCostExperience = totleExperience;
                 minCostExperienceForBookUseList = bookUseList;
             }
-            for (size_t i = 0; i < bookUseList.size(); i++) {
-                std::string idList;
-                std::string levelList;
-                for (size_t j = 0; j < bookUseList[i].size(); j++) {
-                    idList += std::to_string(bookUseList[i][j].id) + " ";
-                }
-                for (size_t j = 0; j < costLevel[i].size(); j++) {
-                    levelList += std::to_string(costLevel[i][j]) + " ";
-                }
-                std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
-            }
+            // std::cout << "方案消耗等级：" << totleCostLevel << " 方案消耗经验值：" << totleExperience << std::endl;
+            // for (size_t i = 0; i < bookUseList.size(); i++) {
+            // std::string idList;
+            // std::string levelList;
+            // for (size_t j = 0; j < bookUseList[i].size(); j++) {
+            // idList += std::to_string(bookUseList[i][j].id) + " ";
+            // }
+            // for (size_t j = 0; j < costLevel[i].size(); j++) {
+            // levelList += std::to_string(costLevel[i][j]) + " ";
+            // }
+            // std::cout << std::format("{:<20} {}", idList, levelList) << std::endl;
+            // }
         }
         return;
     }
